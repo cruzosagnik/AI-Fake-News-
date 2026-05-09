@@ -24,3 +24,6 @@ dist-ssr
 *.sw?
 
 .env
+
+# TypeScript build info cache
+*.tsbuildinfo
