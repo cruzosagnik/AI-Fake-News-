@@ -1,0 +1,29 @@
+[
+  {
+    "text": "Scientists confirm drinking hot water cures cancer, WHO endorses new therapy.",
+    "expected_verdict": "Fake",
+    "category": "health"
+  },
+  {
+    "text": "India wins the 2024 T20 World Cup defeating South Africa in the final.",
+    "expected_verdict": "Real",
+    "category": "sports"
+  },
+  {
+    "text": "Stock markets crash 40% overnight due to secret government policy.",
+    "expected_verdict": "Misleading",
+    "category": "finance"
+  },
+  {
+    "text": "नई दिल्ली में भूकंप के कारण 500 लोगों की मौत हुई।",
+    "expected_verdict": "Fake",
+    "category": "disasters",
+    "language": "hi"
+  },
+  {
+    "text": "বিশ্বের সবচেয়ে বড় ভ্যাকসিন আবিষ্কার হয়েছে বাংলাদেশে।",
+    "expected_verdict": "Misleading",
+    "category": "health",
+    "language": "bn"
+  }
+]
