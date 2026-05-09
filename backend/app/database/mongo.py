@@ -11,7 +11,13 @@ async def connect_db():
     mongo_uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017/truthlens")
     try:
         if "mongodb+srv" in mongo_uri:
-            _client = AsyncIOMotorClient(mongo_uri, serverSelectionTimeoutMS=5000, tlsCAFile=certifi.where())
+            _client = AsyncIOMotorClient(
+                mongo_uri, 
+                serverSelectionTimeoutMS=5000, 
+                tls=True,
+                tlsCAFile=certifi.where(),
+                tlsAllowInvalidCertificates=True
+            )
         else:
             _client = AsyncIOMotorClient(mongo_uri, serverSelectionTimeoutMS=5000)
         await _client.admin.command("ping")
