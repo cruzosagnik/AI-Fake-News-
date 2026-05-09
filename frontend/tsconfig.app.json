@@ -16,13 +16,6 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    /* Paths */
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    },
-    "ignoreDeprecations": "6.0",
 
     /* Linting */
     "strict": true,

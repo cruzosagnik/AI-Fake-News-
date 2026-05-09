@@ -17,7 +17,7 @@ import {
   XIcon,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import { cn } from '../../lib/utils';
 
 type AnalysisType = 'text' | 'url' | 'pdf' | 'image' | 'social';
 
