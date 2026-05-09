@@ -1,5 +1,6 @@
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
+import certifi
 
 _client: AsyncIOMotorClient = None
 db = None
@@ -9,7 +10,10 @@ async def connect_db():
     global _client, db
     mongo_uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017/truthlens")
     try:
-        _client = AsyncIOMotorClient(mongo_uri, serverSelectionTimeoutMS=5000)
+        if "mongodb+srv" in mongo_uri:
+            _client = AsyncIOMotorClient(mongo_uri, serverSelectionTimeoutMS=5000, tlsCAFile=certifi.where())
+        else:
+            _client = AsyncIOMotorClient(mongo_uri, serverSelectionTimeoutMS=5000)
         await _client.admin.command("ping")
         db = _client.get_database("truthlens")
         print("[OK] Connected to MongoDB")
