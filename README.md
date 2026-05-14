@@ -1,4 +1,4 @@
-# 🔍 TruthLens AI
+# 🔍 VerifyX
 
 > **Detect Misinformation. Defend the Truth.**
 

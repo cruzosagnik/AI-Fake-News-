@@ -104,7 +104,7 @@ export default function LandingPage() {
             transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
             className="mx-auto mt-8 max-w-2xl text-base leading-8 text-zinc-400 sm:text-lg"
           >
-            TruthLens AI empowers you to detect misinformation across{' '}
+            VerifyX empowers you to detect misinformation across{' '}
             <span className="font-semibold text-zinc-100">10+ categories</span> in{' '}
             <span className="font-semibold text-zinc-100">3 languages</span>. Our modular 6-agent pipeline delivers an exhaustive, transparent fact-checking report instantly.
           </motion.p>
@@ -226,7 +226,7 @@ export default function LandingPage() {
       <footer className="border-t border-white/5 py-8 text-center text-sm text-zinc-600">
         <div className="mb-2 flex items-center justify-center gap-2">
           <Shield className="h-4 w-4 text-orange-400" />
-          <span className="font-bold text-zinc-400">TruthLens AI</span>
+          <span className="font-bold text-zinc-400">VerifyX</span>
         </div>
         <p>Built for Hackathons · React + FastAPI + MongoDB + Gemini + HuggingFace</p>
       </footer>

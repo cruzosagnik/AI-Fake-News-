@@ -19,7 +19,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="TruthLens AI",
+    title="VerifyX",
     description="Explainable AI-powered misinformation detection platform",
     version="1.0.0",
     lifespan=lifespan,
@@ -41,7 +41,7 @@ app.include_router(auth_router, prefix="/auth")
 
 @app.get("/")
 async def root():
-    return {"message": "TruthLens AI API is running", "version": "1.0.0"}
+    return {"message": "VerifyX API is running", "version": "1.0.0"}
 
 
 @app.get("/health")

@@ -313,7 +313,7 @@ export function AnimatedAIChat({ onAnalyze, loading }: AnimatedAIChatProps) {
         <div className="text-center">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-xs font-medium text-zinc-400 backdrop-blur-xl">
             <Sparkles className="h-3.5 w-3.5 text-orange-300" />
-            TruthLens AI workspace
+            VerifyX workspace
           </div>
           <h2 className="mt-4 font-serif text-3xl text-white sm:text-4xl">What should we verify?</h2>
           <p className="mt-2 text-sm text-zinc-500">Use commands, paste content, or attach evidence.</p>

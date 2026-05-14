@@ -66,7 +66,7 @@ export default function AnalyzePage() {
   const trustScore = (agentBreakdown?.sourceVerifier as { trustScore: number })?.trustScore || 50;
 
   const handleCopy = () => {
-    const text = `TruthLens AI Verdict: ${result.verdict} (${result.authenticityScore.toFixed(0)}/100)\n\n${result.explanation}`;
+    const text = `VerifyX Verdict: ${result.verdict} (${result.authenticityScore.toFixed(0)}/100)\n\n${result.explanation}`;
     navigator.clipboard.writeText(text);
     toast.success('Result copied to clipboard!');
   };

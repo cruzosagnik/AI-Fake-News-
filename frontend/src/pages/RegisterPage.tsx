@@ -67,7 +67,7 @@ export default function RegisterPage() {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-3xl font-black text-white tracking-tight"
           >
-            Join TruthLens AI
+            Join VerifyX
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0 }}
