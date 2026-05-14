@@ -148,7 +148,7 @@ export default function LandingPage() {
               scaleOnHover
               fadeOut
               fadeOutColor="#030303"
-              ariaLabel="TruthLens analysis categories"
+              ariaLabel="VerifyX analysis categories"
             />
           </motion.div>
         </motion.div>

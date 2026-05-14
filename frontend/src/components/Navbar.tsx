@@ -30,7 +30,7 @@ export default function Navbar() {
               <Shield className="h-4 w-4 text-black" />
             </div>
             <span className="text-base font-semibold tracking-normal text-white">
-              Truth<span className="text-orange-300">Lens</span>
+              Verify<span className="text-orange-300">X</span>
               <span className="ml-1 text-xs font-normal text-zinc-500">AI</span>
             </span>
           </Link>

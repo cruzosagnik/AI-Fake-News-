@@ -24,7 +24,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await register(name, email, password);
-      toast.success('Account created! Welcome to TruthLens.');
+      toast.success('Account created! Welcome to VerifyX.');
       navigate('/dashboard');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Registration failed';
@@ -41,14 +41,14 @@ export default function RegisterPage() {
         <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-orange-600/15 rounded-full blur-3xl" />
       </div>
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.5, delay: 0.1 }}
@@ -58,10 +58,10 @@ export default function RegisterPage() {
               <Shield className="w-5 h-5 text-white" />
             </div>
             <span className="font-black text-xl text-white">
-              Truth<span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-400">Lens</span>
+              Verify<span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-400">X</span>
             </span>
           </motion.div>
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -69,7 +69,7 @@ export default function RegisterPage() {
           >
             Join VerifyX
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
@@ -79,7 +79,7 @@ export default function RegisterPage() {
           </motion.p>
         </div>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
@@ -134,17 +134,16 @@ export default function RegisterPage() {
                 {[1, 2, 3, 4].map((level) => (
                   <div
                     key={level}
-                    className={`h-1 flex-1 rounded-full transition-all ${
-                      password.length >= level * 3
+                    className={`h-1 flex-1 rounded-full transition-all ${password.length >= level * 3
                         ? level <= 1
                           ? 'bg-red-500'
                           : level <= 2
-                          ? 'bg-orange-500'
-                          : level <= 3
-                          ? 'bg-yellow-500'
-                          : 'bg-emerald-500'
+                            ? 'bg-orange-500'
+                            : level <= 3
+                              ? 'bg-yellow-500'
+                              : 'bg-emerald-500'
                         : 'bg-white/10'
-                    }`}
+                      }`}
                   />
                 ))}
               </div>
@@ -177,7 +176,7 @@ export default function RegisterPage() {
           </div>
         </motion.div>
 
-        <motion.p 
+        <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.6 }}
