@@ -16,7 +16,6 @@ async def connect_db():
                 serverSelectionTimeoutMS=5000, 
                 tls=True,
                 tlsCAFile=certifi.where(),
-                tlsAllowInvalidCertificates=True
             )
         else:
             _client = AsyncIOMotorClient(mongo_uri, serverSelectionTimeoutMS=5000)

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Shield, LogOut, LayoutDashboard, User, ArrowRight } from 'lucide-react';
+import { Shield, LogOut, LayoutDashboard, User, ArrowRight, Swords } from 'lucide-react';
 import { useAuth } from '../hooks/useAuth';
 
 export default function Navbar() {
@@ -53,6 +53,13 @@ export default function Navbar() {
               className="hidden text-sm text-zinc-500 transition-colors hover:text-zinc-100 sm:inline"
             >
               Live News
+            </Link>
+            <Link
+              to="/debate"
+              className="hidden items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-orange-300 sm:inline-flex"
+            >
+              <Swords className="h-3.5 w-3.5" />
+              AgentDebate
             </Link>
             {isAuthenticated && (
               <Link
