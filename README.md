@@ -167,7 +167,7 @@ VITE_API_URL=http://localhost:8000
 | GET | `/analytics` | — | Aggregated stats |
 | GET | `/categories` | — | Category breakdown |
 | GET | `/trend` | — | 7-day verdict trend |
-| GET | `/trending-topics` | — | Top suspicious claims |
+| GET | `/trending-topics` | — | Top suspicious claims  |
 | GET | `/health` | — | Health check |
 
 ### AgentDebate Mode
