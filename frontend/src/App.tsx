@@ -9,6 +9,7 @@ import DashboardPage from './pages/DashboardPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import NewsPage from './pages/NewsPage';
+import DebatePage from './pages/DebatePage';
 import type { ReactNode } from 'react';
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -30,6 +31,7 @@ function AppRoutes() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/analyze" element={<AnalyzePage />} />
         <Route path="/news" element={<NewsPage />} />
+        <Route path="/debate" element={<DebatePage />} />
         <Route
           path="/dashboard"
           element={
