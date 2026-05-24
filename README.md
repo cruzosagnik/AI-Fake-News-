@@ -66,7 +66,7 @@ An explainable AI-powered fake news detection platform. Uses a **6-agent AI pipe
 
 | Agent | Role | Stance |
 |-------|------|--------|
-| **α — Agent Alpha** | Professional fact-checker who builds the strongest case for authenticity | **REAL** (Defender) |
+| **α — Agent Alpha** | Professional fact-checker who builds the strongest case for authenticity | **REAL** (Defender ) |
 | **β — Agent Beta** | Misinformation analyst who finds every reason to doubt the content | **FAKE** (Prosecutor) |
 | **γ — Agent Gamma** | Neutral senior judge who evaluates both arguments blindly and delivers the final verdict | **Judge** |
 
