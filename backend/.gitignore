@@ -23,3 +23,6 @@ build/
 
 # Logs
 *.log
+
+# Tesseract language data (large binaries — install separately)
+tessdata/

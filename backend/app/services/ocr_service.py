@@ -1,7 +1,39 @@
 import asyncio
+import os
+import sys
 from PIL import Image
 import io
 from typing import Union
+
+
+def _configure_tesseract():
+    """Configure the Tesseract executable path and tessdata directory."""
+    try:
+        import pytesseract
+
+        # On Linux (e.g. Render), TESSDATA_PREFIX is set as an env var — don't override.
+        # On Windows (local dev), point to the bundled tessdata/ folder.
+        if sys.platform == "win32" and not os.environ.get("TESSDATA_PREFIX"):
+            _tessdata_dir = os.path.join(os.path.dirname(__file__), "..", "..", "tessdata")
+            _tessdata_dir = os.path.abspath(_tessdata_dir)
+            if os.path.isdir(_tessdata_dir):
+                os.environ["TESSDATA_PREFIX"] = _tessdata_dir
+
+        if sys.platform == "win32":
+            # Try common Windows install locations (UB-Mannheim installer)
+            candidates = [
+                r"C:\Program Files\Tesseract-OCR\tesseract.exe",
+                r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
+                os.path.join(os.environ.get("LOCALAPPDATA", ""), "Tesseract-OCR", "tesseract.exe"),
+                os.path.join(os.environ.get("APPDATA", ""), "Tesseract-OCR", "tesseract.exe"),
+            ]
+            for path in candidates:
+                if os.path.isfile(path):
+                    pytesseract.pytesseract.tesseract_cmd = path
+                    return
+            # Fall back to PATH lookup — let pytesseract raise if not found
+    except ImportError:
+        pass
 
 
 async def extract_text_from_image(image_bytes: bytes) -> str:
@@ -11,6 +43,7 @@ async def extract_text_from_image(image_bytes: bytes) -> str:
     """
     try:
         import pytesseract
+        _configure_tesseract()
 
         loop = asyncio.get_event_loop()
 
