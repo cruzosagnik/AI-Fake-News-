@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, useMotionValue, useMotionTemplate } from 'framer-motion';
@@ -27,6 +27,7 @@ import LogoLoop from '../components/ui/LogoLoop';
 import Footer from '../components/Footer';
 
 import { useAnalysis } from '../hooks/useAnalysis';
+import { getAnalytics } from '../lib/api';
 
 const CATEGORIES = [
   { node: <CategoryLoopItem icon={<Landmark />} label="Politics" />, title: 'Politics' },
@@ -56,6 +57,30 @@ const fadeUp = {
 export default function LandingPage() {
   const navigate = useNavigate();
   const { result, loading, error, steps, analyze } = useAnalysis();
+
+  const [stats, setStats] = useState(STATS);
+
+  useEffect(() => {
+    getAnalytics()
+      .then((data) => {
+        setStats([
+          { 
+            label: 'Articles Analyzed', 
+            value: data.total >= 1000000 
+              ? `${(data.total / 1000000).toFixed(1)}M+` 
+              : data.total >= 1000 
+                ? `${(data.total / 1000).toFixed(1)}K+` 
+                : data.total.toLocaleString() 
+          },
+          { label: 'Accuracy Rate', value: `${data.accuracyRate}%` },
+          { label: 'Languages', value: data.languagesCount?.toString() ?? '3' },
+          { label: 'AI Agents', value: '6' },
+        ]);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch analytics:", err);
+      });
+  }, []);
 
   useEffect(() => {
     if (result) {
@@ -187,7 +212,7 @@ export default function LandingPage() {
 
       <section className="border-y border-white/10 bg-white/2.5 px-4 py-8 backdrop-blur-xl">
         <div className="mx-auto grid max-w-4xl grid-cols-2 gap-8 sm:grid-cols-4">
-          {STATS.map(({ label, value }) => (
+          {stats.map(({ label, value }) => (
             <div key={label} className="text-center">
               <div className="font-serif text-3xl text-transparent bg-clip-text bg-linear-to-r from-orange-200 to-orange-500">
                 {value}
