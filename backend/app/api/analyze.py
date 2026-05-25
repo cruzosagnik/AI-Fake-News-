@@ -198,28 +198,44 @@ async def get_history(user_id: Optional[str] = Depends(get_optional_user)):
 
 
 @router.get("/analytics")
-async def get_analytics():
+async def get_analytics(user_id: Optional[str] = Depends(get_optional_user)):
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Authentication required.")
     db = get_db()
     if db is None:
-        return _mock_analytics()
+        raise HTTPException(status_code=503, detail="Database unavailable.")
     try:
-        total = await db["analyses"].count_documents({})
+        user_filter = {"userId": user_id}
+        total = await db["analyses"].count_documents(user_filter)
+        if total == 0:
+            return {
+                "total": 0,
+                "fake": 0,
+                "real": 0,
+                "misleading": 0,
+                "partiallyTrue": 0,
+                "accuracyRate": 0,
+                "languagesCount": 0,
+            }
         
-        cursor = db["analyses"].aggregate([{"$group": {"_id": None, "avg_accuracy": {"$avg": "$confidenceScore"}}}])
+        cursor = db["analyses"].aggregate([
+            {"$match": user_filter},
+            {"$group": {"_id": None, "avg_accuracy": {"$avg": "$confidenceScore"}}},
+        ])
         agg_result = []
         async for doc in cursor:
             agg_result.append(doc)
-        accuracy_rate = round(agg_result[0]["avg_accuracy"]) if agg_result and agg_result[0].get("avg_accuracy") else 94
+        accuracy_rate = round(agg_result[0]["avg_accuracy"]) if agg_result and agg_result[0].get("avg_accuracy") else 0
         
-        languages = await db["analyses"].distinct("language")
-        languages_count = len(languages) if languages else 3
+        languages = await db["analyses"].distinct("language", user_filter)
+        languages_count = len(languages) if languages else 0
 
         return {
             "total": total,
-            "fake": await db["analyses"].count_documents({"verdict": "Fake"}),
-            "real": await db["analyses"].count_documents({"verdict": "Real"}),
-            "misleading": await db["analyses"].count_documents({"verdict": "Misleading"}),
-            "partiallyTrue": await db["analyses"].count_documents({"verdict": "Partially True"}),
+            "fake": await db["analyses"].count_documents({**user_filter, "verdict": "Fake"}),
+            "real": await db["analyses"].count_documents({**user_filter, "verdict": "Real"}),
+            "misleading": await db["analyses"].count_documents({**user_filter, "verdict": "Misleading"}),
+            "partiallyTrue": await db["analyses"].count_documents({**user_filter, "verdict": "Partially True"}),
             "accuracyRate": accuracy_rate,
             "languagesCount": languages_count,
         }
@@ -229,12 +245,18 @@ async def get_analytics():
 
 
 @router.get("/categories")
-async def get_categories():
+async def get_categories(user_id: Optional[str] = Depends(get_optional_user)):
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Authentication required.")
     db = get_db()
     if db is None:
-        return _mock_categories()
+        raise HTTPException(status_code=503, detail="Database unavailable.")
     try:
-        pipeline = [{"$group": {"_id": "$category", "count": {"$sum": 1}}}, {"$sort": {"count": -1}}]
+        pipeline = [
+            {"$match": {"userId": user_id}},
+            {"$group": {"_id": "$category", "count": {"$sum": 1}}},
+            {"$sort": {"count": -1}},
+        ]
         results = {}
         async for doc in db["analyses"].aggregate(pipeline):
             results[doc["_id"]] = doc["count"]
@@ -252,17 +274,19 @@ def _mock_categories():
 
 
 @router.get("/trend")
-async def get_trend():
+async def get_trend(user_id: Optional[str] = Depends(get_optional_user)):
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Authentication required.")
     db = get_db()
     if db is None:
-        return _mock_trend()
+        raise HTTPException(status_code=503, detail="Database unavailable.")
     try:
         from datetime import datetime, timedelta
         import calendar
         seven_days_ago = datetime.utcnow() - timedelta(days=7)
         
         pipeline = [
-            {"$match": {"createdAt": {"$gte": seven_days_ago}}},
+            {"$match": {"userId": user_id, "createdAt": {"$gte": seven_days_ago}}},
             {"$project": {
                 "dayOfWeek": {"$dayOfWeek": "$createdAt"},
                 "verdict": 1
@@ -306,13 +330,17 @@ async def get_trend():
 
 
 @router.get("/trending-topics")
-async def get_trending_topics():
+async def get_trending_topics(user_id: Optional[str] = Depends(get_optional_user)):
+    if not user_id:
+        raise HTTPException(status_code=401, detail="Authentication required.")
     db = get_db()
     if db is None:
-        return _mock_trending_topics()
+        raise HTTPException(status_code=503, detail="Database unavailable.")
     try:
         # Find the most common suspicious claims from the last 100 fake/misleading analyses
-        cursor = db["analyses"].find({"verdict": {"$in": ["Fake", "Misleading"]}}).sort("createdAt", -1).limit(100)
+        cursor = db["analyses"].find(
+            {"userId": user_id, "verdict": {"$in": ["Fake", "Misleading"]}}
+        ).sort("createdAt", -1).limit(100)
         claims_freq = {}
         async for doc in cursor:
             for claim in doc.get("suspiciousClaims", []):

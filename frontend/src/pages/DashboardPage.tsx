@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip,
   LineChart, Line, CartesianGrid, ResponsiveContainer, Legend,
@@ -8,6 +8,7 @@ import { getAnalytics, getCategories, getHistory, getTrend, getTrendingTopics } 
 import VerdictCard from '../components/VerdictCard';
 import type { AnalysisResult, AnalyticsData } from '../types';
 import { motion } from 'framer-motion';
+import { toast } from 'react-hot-toast';
 
 const VERDICT_COLORS: Record<string, string> = {
   Real: '#34d399',
@@ -38,25 +39,71 @@ export default function DashboardPage() {
   const [history, setHistory] = useState<AnalysisResult[]>([]);
   const [trendData, setTrendData] = useState<any[]>([]);
   const [trendingTopics, setTrendingTopics] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const pollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pollDelayRef = useRef(30000);
+  const lastErrorRef = useRef<string | null>(null);
+  const mountedRef = useRef(true);
+
+  const scheduleNext = useCallback((delayMs: number, fetchData: () => void) => {
+    if (pollTimerRef.current) {
+      clearTimeout(pollTimerRef.current);
+    }
+    pollTimerRef.current = setTimeout(fetchData, delayMs);
+  }, []);
+
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const [a, c, h, t, tp] = await Promise.all([
+        getAnalytics(),
+        getCategories(),
+        getHistory(),
+        getTrend(),
+        getTrendingTopics(),
+      ]);
+      if (!mountedRef.current) return;
+      setAnalytics(a);
+      setCategories(c);
+      setHistory(h.analyses.slice(0, 10));
+      setTrendData(t);
+      setTrendingTopics(tp);
+      setLastUpdated(new Date());
+      pollDelayRef.current = 30000;
+      lastErrorRef.current = null;
+      scheduleNext(pollDelayRef.current, fetchData);
+    } catch (err) {
+      if (!mountedRef.current) return;
+      const message = err instanceof Error ? err.message : 'Failed to load dashboard data.';
+      setError(message);
+      const nextDelay = Math.min(pollDelayRef.current * 2, 120000);
+      pollDelayRef.current = nextDelay;
+      if (lastErrorRef.current !== message) {
+        toast.error(message);
+        lastErrorRef.current = message;
+      }
+      scheduleNext(pollDelayRef.current, fetchData);
+    } finally {
+      if (mountedRef.current) {
+        setIsLoading(false);
+      }
+    }
+  }, [scheduleNext]);
 
   useEffect(() => {
-    const fetchData = () => {
-      Promise.all([getAnalytics(), getCategories(), getHistory(), getTrend(), getTrendingTopics()])
-        .then(([a, c, h, t, tp]) => {
-          setAnalytics(a);
-          setCategories(c);
-          setHistory(h.analyses.slice(0, 10));
-          setTrendData(t);
-          setTrendingTopics(tp);
-        })
-        .catch(console.error);
+    mountedRef.current = true;
+    fetchData();
+
+    return () => {
+      mountedRef.current = false;
+      if (pollTimerRef.current) {
+        clearTimeout(pollTimerRef.current);
+      }
     };
-
-    fetchData(); // initial fetch
-    const intervalId = setInterval(fetchData, 30000); // 30s poll
-
-    return () => clearInterval(intervalId);
-  }, []);
+  }, [fetchData]);
 
   const pieData = analytics
     ? [
@@ -78,6 +125,24 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#030303] text-white pt-20 pb-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        {error && (
+          <div className="mb-6 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <span>Dashboard data is temporarily unavailable. Retrying in {Math.round(pollDelayRef.current / 1000)}s.</span>
+              <button
+                type="button"
+                onClick={() => {
+                  pollDelayRef.current = 30000;
+                  if (pollTimerRef.current) clearTimeout(pollTimerRef.current);
+                  fetchData();
+                }}
+                className="rounded-full border border-red-500/30 px-3 py-1 text-xs font-semibold text-red-100 transition hover:border-red-400/60 hover:text-white"
+              >
+                Retry now
+              </button>
+            </div>
+          </div>
+        )}
         <motion.div 
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -87,7 +152,9 @@ export default function DashboardPage() {
           <h1 className="text-3xl font-black text-white tracking-tight">
             Analytics Overview
           </h1>
-          <p className="text-gray-400 text-sm mt-1">Real-time insights and fact-checking metrics</p>
+          <p className="text-gray-400 text-sm mt-1">
+            Real-time insights and fact-checking metrics{lastUpdated ? ` · Updated ${lastUpdated.toLocaleTimeString()}` : ''}
+          </p>
         </motion.div>
 
         {/* ── Stats Row ─────────────────────────── */}
@@ -115,7 +182,7 @@ export default function DashboardPage() {
               className="glass-card p-5 border border-white/5 shadow-xl shadow-black/20"
             >
               <Icon className={`w-5 h-5 ${color} mb-2`} />
-              <div className={`text-3xl font-black ${color} tracking-tight`}>{value}</div>
+              <div className={`text-3xl font-black ${color} tracking-tight`}>{isLoading ? '—' : value}</div>
               <div className="text-gray-400 text-xs mt-1 font-medium">{label}</div>
             </motion.div>
           ))}
@@ -156,7 +223,9 @@ export default function DashboardPage() {
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-48 flex items-center justify-center text-gray-600 text-sm">Loading...</div>
+              <div className="h-48 flex items-center justify-center text-gray-600 text-sm">
+                {isLoading ? 'Loading...' : 'No data yet.'}
+              </div>
             )}
           </div>
 
@@ -174,7 +243,9 @@ export default function DashboardPage() {
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-48 flex items-center justify-center text-gray-600 text-sm">Loading...</div>
+              <div className="h-48 flex items-center justify-center text-gray-600 text-sm">
+                {isLoading ? 'Loading...' : 'No data yet.'}
+              </div>
             )}
           </div>
         </motion.div>
@@ -212,15 +283,21 @@ export default function DashboardPage() {
               Trending Misinformation
             </h2>
             <div className="space-y-3">
-              {trendingTopics.map((topic, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <span className="text-gray-600 text-xs font-bold w-4">#{i + 1}</span>
-                  <span className="text-gray-300 text-sm flex-1 truncate" title={topic}>{topic}</span>
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">
-                    Viral
-                  </span>
+              {trendingTopics.length > 0 ? (
+                trendingTopics.map((topic, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <span className="text-gray-600 text-xs font-bold w-4">#{i + 1}</span>
+                    <span className="text-gray-300 text-sm flex-1 truncate" title={topic}>{topic}</span>
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20">
+                      Viral
+                    </span>
+                  </div>
+                ))
+              ) : (
+                <div className="text-gray-500 text-sm">
+                  {isLoading ? 'Loading...' : 'No trends yet.'}
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </motion.div>
@@ -268,7 +345,7 @@ export default function DashboardPage() {
             </div>
           ) : (
             <p className="text-gray-500 text-sm text-center py-8">
-              No analyses yet. Start fact-checking on the home page.
+              {isLoading ? 'Loading analyses...' : 'No analyses yet. Start fact-checking on the home page.'}
             </p>
           )}
         </motion.div>
