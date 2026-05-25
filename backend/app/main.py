@@ -1,5 +1,6 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from contextlib import asynccontextmanager
 import os
 import logging
@@ -74,9 +75,6 @@ app.include_router(debate_router)
 # Ensure CORS headers are present even on unhandled 500 errors.
 # Without this, a server crash strips the CORS headers and the browser
 # reports a misleading "CORS error" instead of the real server error.
-from fastapi import Request
-from fastapi.responses import JSONResponse
-
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     origin = request.headers.get("origin", "")
