@@ -155,7 +155,10 @@ async def upload_pdf(file: UploadFile = File(...), user_id: Optional[str] = Depe
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are accepted.")
     pdf_bytes = await file.read()
-    content = await extract_text_from_pdf(pdf_bytes)
+    try:
+        content = await extract_text_from_pdf(pdf_bytes)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
     result = await run_pipeline(content)
     await save_analysis(get_db(), content, result, user_id)
     return result
@@ -168,7 +171,10 @@ async def ocr_image(file: UploadFile = File(...), user_id: Optional[str] = Depen
     if ext not in allowed:
         raise HTTPException(status_code=400, detail="Unsupported image format.")
     image_bytes = await file.read()
-    content = await extract_text_from_image(image_bytes)
+    try:
+        content = await extract_text_from_image(image_bytes)
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
     result = await run_pipeline(content)
     await save_analysis(get_db(), content, result, user_id)
     return result

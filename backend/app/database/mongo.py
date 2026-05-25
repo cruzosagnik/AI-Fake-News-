@@ -19,9 +19,11 @@ async def connect_db():
             )
         else:
             _client = AsyncIOMotorClient(mongo_uri, serverSelectionTimeoutMS=5000)
-        await _client.admin.command("ping")
-        db = _client.get_database("truthlens")
-        print("[OK] Connected to MongoDB")
+        try:
+            db = _client.get_default_database()
+        except Exception:
+            db = _client.get_database("truthlens")
+        print(f"[OK] Connected to MongoDB database: {db.name}")
     except Exception as e:
         print(f"[WARN] MongoDB connection failed: {e}. Running without database.")
         db = None

@@ -151,17 +151,15 @@ async def _safe_fakenews_signal(text: str) -> dict:
     signal = {"verdict_signal": None, "credibility_score": None}
     try:
         result = await get_fakenews_signal(text)
+        label = str(result.get("label", "")).lower()
+        confidence = float(result.get("score", 0.0))
+        if confidence < 0.65:
+            return signal
+
+        if "fake" in label or "false" in label or label in {"label_0", "0"}:
+            return {"verdict_signal": "FAKE", "credibility_score": int((1.0 - confidence) * 30)}
+        if "real" in label or "true" in label or label in {"label_1", "1"}:
+            return {"verdict_signal": "REAL", "credibility_score": int(70 + confidence * 25)}
     except Exception as e:
-        print(f"[Agent A] Fallback fake-news classifier failed: {e}")
-        return signal
-
-    label = str(result.get("label", "")).lower()
-    confidence = float(result.get("score", 0.0))
-    if confidence < 0.65:
-        return signal
-
-    if "fake" in label or "false" in label or label in {"label_0", "0"}:
-        return {"verdict_signal": "FAKE", "credibility_score": int((1.0 - confidence) * 30)}
-    if "real" in label or "true" in label or label in {"label_1", "1"}:
-        return {"verdict_signal": "REAL", "credibility_score": int(70 + confidence * 25)}
+        print(f"[Agent A] Fallback fake-news classifier failed or parsed incorrectly: {e}")
     return signal
