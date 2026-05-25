@@ -21,9 +21,9 @@ services:
       - key: JWT_SECRET
         generateValue: true
       - key: FRONTEND_URL
-        sync: false
+        value: "https://ai-fake-news2.vercel.app"
       - key: ALLOWED_ORIGINS
-        sync: false
+        value: "https://ai-fake-news2.vercel.app"
       - key: PYTHON_VERSION
         value: "3.11.0"
       - key: TESSDATA_PREFIX
