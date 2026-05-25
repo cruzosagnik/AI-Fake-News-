@@ -53,3 +53,6 @@ Thumbs.db
 .pytest_cache/
 .coverage
 htmlcov/
+
+# ── md ────────────────────────────────────────
+debate_agents_prompt.md
