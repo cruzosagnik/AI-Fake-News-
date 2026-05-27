@@ -1,33 +1,90 @@
 document
-.getElementById("checkBtn")
-.addEventListener(
-"click",
+  .getElementById("checkBtn")
+  .addEventListener("click", async () => {
 
-async ()=>{
+    const news =
+      document
+        .getElementById("newsText")
+        .value;
 
-const news=
+    if (news === "") {
 
-document
-.getElementById("newsText")
-.value;
+      document
+        .getElementById("result")
+        .innerHTML =
+        "Paste some news first";
 
-if(news===""){
+      return;
+    }
 
-document
-.getElementById("result")
-.innerText=
+    document
+      .getElementById("result")
+      .innerHTML =
+      "Checking...";
 
-"Paste some news first";
+    try {
 
-return;
+      const response = await fetch(
+        "http://127.0.0.1:8000/analyze-text",
+        {
+          method: "POST",
 
-}
+          headers: {
+            "Content-Type": "application/json"
+          },
 
-document
-.getElementById("result")
-.innerText=
+          body: JSON.stringify({
+            text: news
+          })
+        }
+      );
 
-"Checking...";
+      const data = await response.json();
 
-}
-);
+      document
+        .getElementById("result")
+        .innerHTML = `
+
+        <div style="font-family: Arial;">
+
+          <h3>Result</h3>
+
+          <p>
+            <strong>Verdict:</strong>
+            ${data.verdict}
+          </p>
+
+          <p>
+            <strong>Authenticity Score:</strong>
+            ${data.authenticityScore}
+          </p>
+
+          <p>
+            <strong>Confidence:</strong>
+            ${data.confidenceScore}
+          </p>
+
+          <p>
+            <strong>Bias Score:</strong>
+            ${data.biasScore}
+          </p>
+
+          <p>
+            <strong>Explanation:</strong><br>
+            ${data.explanation}
+          </p>
+
+        </div>
+      `;
+
+    } catch (error) {
+
+      console.error(error);
+
+      document
+        .getElementById("result")
+        .innerHTML =
+        "Backend Error";
+    }
+
+  });

@@ -50,7 +50,7 @@ function AppRoutes() {
 }
 
 export default function App() {
-  const IS_MAINTENANCE = true; // Toggle this to true to enable maintenance mode
+  const IS_MAINTENANCE = false; // Toggle this to true to enable maintenance mode
 
   if (IS_MAINTENANCE) {
     return <MaintenancePage />;
