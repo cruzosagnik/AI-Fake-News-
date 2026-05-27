@@ -10,6 +10,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import NewsPage from './pages/NewsPage';
 import DebatePage from './pages/DebatePage';
+import MaintenancePage from './pages/MaintenancePage';
 import type { ReactNode } from 'react';
 
 function ProtectedRoute({ children }: { children: ReactNode }) {
@@ -49,6 +50,12 @@ function AppRoutes() {
 }
 
 export default function App() {
+  const IS_MAINTENANCE = true; // Toggle this to true to enable maintenance mode
+
+  if (IS_MAINTENANCE) {
+    return <MaintenancePage />;
+  }
+
   return (
     <BrowserRouter>
       <AuthProvider>
