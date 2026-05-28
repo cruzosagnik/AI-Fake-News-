@@ -2,18 +2,21 @@
   "manifest_version": 3,
   "name": "VerifyX",
   "version": "1.0",
-  "description": "AI Fake News Detector",
 
   "permissions": [
-    "activeTab",
-    "storage"
+    "activeTab"
   ],
 
   "host_permissions": [
-    "http://localhost:5000/*"
+    "http://127.0.0.1:8000/*",
+    "http://localhost:8000/*"
   ],
 
   "action": {
     "default_popup": "popup.html"
+  },
+
+  "background": {
+    "service_worker": "background.js"
   }
 }
