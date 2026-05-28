@@ -1,32 +1,24 @@
-<!DOCTYPE html>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>VerifyX</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="popup-shell">
+      <div class="top-badge">Live fact check</div>
+      <h1>VerifyX</h1>
+      <p class="title-copy">
+        Paste a headline or snippet to verify trustworthiness instantly.
+      </p>
+      <label for="newsText" class="visually-hidden">Paste news here</label>
+      <textarea id="newsText" placeholder="Paste news here"></textarea>
+      <button id="checkBtn">Verify News</button>
+      <div id="result" role="status" aria-live="polite"></div>
+    </div>
 
-<html>
-
-<head>
-<title>VerifyX</title>
-
-<link rel="stylesheet"
-href="style.css">
-
-</head>
-
-<body>
-
-<h2>VerifyX</h2>
-
-<textarea
-id="newsText"
-placeholder="Paste news here">
-</textarea>
-
-<button id="checkBtn">
-Verify News
-</button>
-
-<p id="result"></p>
-
-<script src="popup.js"></script>
-
-</body>
-
+    <script src="popup.js"></script>
+  </body>
 </html>
